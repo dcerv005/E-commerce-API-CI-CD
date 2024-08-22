@@ -39,7 +39,7 @@ def create_app(config_name):
     app.config.from_object(f'config.{config_name}')
     db.init_app(app)
     ma.init_app(app)
-    # cache.init_app(app)
+    cache.init_app(app)
     limiter.init_app(app)
     CORS(app)
 
@@ -93,19 +93,17 @@ def init_roles_customers_data():
             ]
             session.add_all(roles_customers)
 
-app = create_app('DevelopmentConfig')
-blue_print_config(app)
-configure_rate_limit()
+if __name__ == '__main__':
+    app = create_app('DevelopmentConfig')
 
-with app.app_context():
-    # db.drop_all()
-    db.create_all()        
-    # init_roles_data()
-    # init_customers_info_data()
-    # init_roles_customers_data()
+    blue_print_config(app)
+    configure_rate_limit()
 
-# if __name__ == '__main__':
-    
-    
+    with app.app_context():
+        # db.drop_all()
+        db.create_all()        
+        # init_roles_data()
+        # init_customers_info_data()
+        # init_roles_customers_data()
 
-#     app.run(debug=True)
+    app.run(debug=True)
