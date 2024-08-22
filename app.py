@@ -45,6 +45,8 @@ def create_app(config_name):
 
     return app
 
+app = create_app('DevelopmentConfig')
+
 def blue_print_config(app):
     app.register_blueprint(customer_blueprint, url_prefix='/customers')
     # /customers
@@ -93,17 +95,18 @@ def init_roles_customers_data():
             ]
             session.add_all(roles_customers)
 
-if __name__ == '__main__':
-    app = create_app('DevelopmentConfig')
+blue_print_config(app)
+configure_rate_limit()
 
-    blue_print_config(app)
-    configure_rate_limit()
+with app.app_context():
+    # db.drop_all()
+    db.create_all()        
+    # init_roles_data()
+    # init_customers_info_data()
+    # init_roles_customers_data()
+# if __name__ == '__main__':
+    
 
-    with app.app_context():
-        # db.drop_all()
-        db.create_all()        
-        # init_roles_data()
-        # init_customers_info_data()
-        # init_roles_customers_data()
+    
 
-    app.run(debug=True)
+#     app.run(debug=True)
