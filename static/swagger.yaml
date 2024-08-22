@@ -1,0 +1,545 @@
+swagger: '2.0'
+info:
+  title: "E-commerce API"
+  description: "This is an API to manage an E-commerce application"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+securityDefinitions: #Specify we are going to be adding security to this
+  bearerAuth: #Security Scheme we will be using
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  
+  /accounts/login:  #define the route
+    post: #define the method
+      tags:
+        - accounts #header
+      summary: "Login endpoint" #POST /accounts/login summary
+      description: "Endpoint for user authentication" 
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Credentials for Login"
+          required: true
+          schema:
+            $ref : "#/definitions/LoginCredentials"
+      responses:
+        200:
+          description: "Login Successful"
+          schema:
+            $ref: "#/definitions/LoginResponse"
+          examples:
+            application/json: #format
+              value:
+                auth_token: "eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                message: "Login successful"
+                status: "success"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "Error"
+                message: "Invalid Credentials"
+  /accounts:
+    post:
+      tags:
+        - accounts
+      summary: "Create customer accounts endpoint"
+      description: "Endpoint to create customer account"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information to create customers"
+          required: true
+          schema:
+            $ref : "#/definitions/Account"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Account"
+  /accounts/{id}:
+    get:
+      tags:
+        - accounts
+      summary: "Displays account specified by ID"
+      description: "Endpoing that looks for the account in the database by its ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Account"
+    put:
+      tags:
+        - accounts
+      summary: "Update existing account information"
+      description: "Endpoint to update existing account information"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Fill in the chanegs you want to make to the account associated to the ID. For the information that you do not want to change make sure it matches the information it currenlty holds."
+          required: true
+          schema:
+            $ref : "#/definitions/Account"
+            
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Account"
+          
+    delete:
+      tags: 
+        - accounts
+      summary: "Delete account by its ID"
+      description: "Deletes account by ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to delete
+      responses:
+        200:
+          description: "Successful response"
+
+  /customers:
+    get:
+      tags:
+        - customers
+      summary: "Get All Customers"
+      description: "Retrieve a list of all customers"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Customer"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "token is missing | token has expired | invalid token"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+          examples:
+            application/json:
+              value:
+                status: "error"
+                message: "User does not have the required role"
+      security:
+        - bearerAuth: []
+    post:
+      tags:
+        - customers
+      summary: "Create customer endpoint"
+      description: "Endpoint to create customers"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information to create customers"
+          required: true
+          schema:
+            $ref : "#/definitions/Customer"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Product"
+      security:
+        - bearerAuth: []
+  /customers/{id}:
+    get:
+      tags:
+        - customers
+      summary: "Displays customer specified by ID"
+      description: "Endpoing that looks for the customer in the database by its ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Customer"
+    put:
+      tags:
+        - customers
+      summary: "Update existing customer information"
+      description: "Endpoint to update existing customer information"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Fill in the chanegs you want to make to the customer associated to the ID. For the information that you do not want to change make sure it matches the information it currenlty holds."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                description: "Customer's name"
+              email:
+                type: "string"
+                description: "Customer's email"
+              phone:
+                type: "string"
+                description: "Customer's phone number"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Customer"
+          
+    delete:
+      tags: 
+        - customers
+      summary: "Delete customer by its ID"
+      description: "Deletes customer by ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to delete
+      responses:
+        200:
+          description: "Successful response"
+          
+  /products:
+    get:
+      tags:
+        - products
+      summary: "Get All products"
+      description: "Retrieve a list of all products"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+    post:
+      tags:
+        - products
+      summary: "Create product endpoint"
+      description: "Endpoint to create products"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information to create products"
+          required: true
+          schema:
+            $ref : "#/definitions/Product"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Product"
+      security:
+        - bearerAuth: []
+  /products/{id}:
+    get:
+      tags:
+        - products
+      summary: "Displays product specified by ID"
+      description: "Endpoing that looks for the product in the database by its ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Product"
+    put:
+      tags:
+        - products
+      summary: "Update existing product information"
+      description: "Endpoint to update existing product information"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+        - in: "body"
+          name: "body"
+          description: "Fill in the chanegs you want to make to the product associated to the ID. For the information that you do not want to change make sure it matches the information it currenlty holds."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                description: "Product's name"
+              price:
+                type: "number"
+                format: "float"
+                description: "Price of the Product" 
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Product"
+          
+    delete:
+      tags: 
+        - products
+      summary: "Delete product by its ID"
+      description: "Deletes product by ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to delete
+      responses:
+        200:
+          description: "Successful response"
+  /orders:
+    post:
+      tags:
+        - orders
+      summary: "Create new order"
+      description: "Endpoint to create new order"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Information to create orders"
+          required: true
+          schema:
+            $ref : "#/definitions/Order"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Order"
+      security:
+        - bearerAuth: []
+  /orders/{id}:
+    get:
+      tags:
+        - orders
+      summary: "Displays order specified by ID"
+      description: "Endpoing that looks for the order in the database by its ID"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+            format: "int64"
+          required: true
+          decription: Numeric ID of the user to get
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Order"
+
+definitions:
+  LoginCredentials:
+    type: "object"
+    properties: 
+      username:
+        type: "string"
+        description: "Username"
+      password: 
+        type: "string"
+        format: "password"
+        description: "Password"
+    required: 
+      - "username"
+      - "password"
+  LoginResponse:
+    type: "object"
+    properties: 
+      auth_token:
+        type: "string"
+        description: "Authentication token"
+      message:
+        type: "string"
+        description: "Message indicating success or failure"
+      status:
+        type: "string"
+        description: "Status of the operation"
+    required:
+      - "auth_token"
+      - "message"
+  Error:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        description: "Status of the error"
+      message:
+        type: "string"
+        description: "Description of the error"
+    required:
+      - "status"
+      - "message"
+  Account:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        description: "Account username"
+      password:
+        type: "string"
+        description: "Account password"
+      
+      customer:
+        type: "object"
+        properties:
+          id: 
+            type: "integer"
+            format: "int64"
+            description: "Customer ID"
+          name: 
+            type: "string"
+            description: "Customers name"
+          email:
+            type: "string"
+            description: "Customers emailk"
+          phone:
+            type: "string"
+            description: "Customers phone number"
+        required:
+          - "username"
+          - "password"
+          - "customer"
+  Customer:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Customer's name"
+      email:
+        type: "string"
+        description: "Customer's email"
+      phone:
+        type: "string"
+        description: "Customer's phone number"
+      id: 
+        type: "integer"
+        format: "int64"
+        description: "Customers' unique ID"
+    required:
+      - "name"
+      - "email"
+      - "phone"
+      - "id"
+    
+  Product:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Name of the Product"
+      price:
+        type: "number"
+        format: "float"
+        description: "Price of the Product"
+      id: 
+        type: "integer"
+        format: "int64"
+        description: "Products unique ID"
+    required:
+      - "name"
+      - "price"
+      - "id"
+  Order:
+    type: "object"
+    properties:
+      date:
+        type: "string"
+        format: "date"
+        description: "Date order was made"
+      customer_id:
+        type: "integer"
+        format: "int64"
+        description: "Customer placing the order"
+      products:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: "integer"
+              format: "int64"
+              description: "id of product being ordered"
+    required:
+      - date
+      - customer_id
+      - products
+
+
+
+
+# "Yet Another Markup Language" => YAML

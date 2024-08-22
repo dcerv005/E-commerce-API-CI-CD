@@ -1,0 +1,4 @@
+.env
+M13L1
+__pycache__
+#when uploading to github this will tell git to ignore the .env file
